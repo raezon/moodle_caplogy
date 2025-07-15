@@ -22,8 +22,10 @@
 }
 
 .dashboard-bottom {
+    align-items: start;
     display: flex;
     gap: 20px;
+    flex-direction: column;
 }
 
 .bottom-news,
@@ -41,4 +43,12 @@
 
 .school-categories li {
     margin-bottom: 8px;
+}
+
+.d-inline{
+    display: none !important;
+}
+.dashboard-flex{
+    display: flex;
+    justify-content: space-between;
 }
