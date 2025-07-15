@@ -1,58 +1,44 @@
-.dashboard-flex {
+.dashboard-hero {
     display: flex;
-    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.hero-events,
+.hero-deadlines {
+    flex: 1;
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 5px #ccc;
+}
+
+.deadline-card {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+}
+
+.dashboard-bottom {
+    display: flex;
     gap: 20px;
 }
 
-.dashboard-left,
-.dashboard-right {
+.bottom-news,
+.bottom-schools {
     flex: 1;
-    padding: 10px;
-    background-color: #f7f9fc;
-    border: 1px solid #ddd;
+    background: #f0f0f0;
+    padding: 15px;
     border-radius: 8px;
 }
 
-.dashboard-left h4,
-.dashboard-right h4 {
-    margin-bottom: 10px;
-    color: #1a73e8;
-}
-
-.today-courses {
+.school-categories {
     list-style: none;
     padding-left: 0;
 }
 
-.today-courses li {
-    margin-bottom: 6px;
-}
-
-.today-courses a {
-    text-decoration: none;
-    color: #333;
-}
-
-.today-courses a:hover {
-    text-decoration: underline;
-    color: #1a73e8;
-}
-
-.dashboard-bottom {
-    margin-top: 20px;
-    text-align: center;
-}
-
-.btn-allcourses {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #1a73e8;
-    color: white !important;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
-}
-
-.btn-allcourses:hover {
-    background-color: #155ab6;
+.school-categories li {
+    margin-bottom: 8px;
 }

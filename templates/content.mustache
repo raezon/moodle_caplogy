@@ -1,24 +1,57 @@
-<div class="dashboard-flex">
-  <div class="dashboard-left">
-    <h4>📅 Calendrier</h4>
-    {{{calendar}}}
+<div class="dashboard-hero">
+  <div class="hero-events">
+    <h2>📘 Événements à venir</h2>
+    {{#events}}
+      <div class="event-carousel-item">
+        <h3>{{title}}</h3>
+        <p>{{description}}</p>
+        <small>{{date}}</small>
+      </div>
+    {{/events}}
+    {{^events}}
+      <p>Aucun événement à venir.</p>
+    {{/events}}
   </div>
 
-  <div class="dashboard-right">
-    <h4>📘 Cours d’aujourd’hui</h4>
-    {{#hascourses}}
-      <ul class="today-courses">
-        {{#todaycourses}}
-          <li><a href="{{url}}">{{fullname}}</a></li>
-        {{/todaycourses}}
-      </ul>
-    {{/hascourses}}
-    {{^hascourses}}
-      <p>Aucun cours aujourd’hui.</p>
-    {{/hascourses}}
+  <div class="hero-deadlines">
+    <h2>⏳ Deadlines</h2>
+    {{#deadlines}}
+      <div class="deadline-card">
+        <h4>{{title}}</h4>
+        <p>{{description}}</p>
+        <small>À rendre : {{due_date}}</small>
+      </div>
+    {{/deadlines}}
+    {{^deadlines}}
+      <p>Aucune deadline imminente.</p>
+    {{/deadlines}}
   </div>
 </div>
 
 <div class="dashboard-bottom">
-  <a class="btn-allcourses" href="{{allcoursesurl}}">Voir tous mes cours ➜</a>
+  <div class="bottom-news">
+    <h2>📰 News</h2>
+    {{#news}}
+      <article class="news-item">
+        <h3>{{title}}</h3>
+        <p>{{summary}}</p>
+        <a href="{{url}}">Lire la suite</a>
+      </article>
+    {{/news}}
+    {{^news}}
+      <p>Aucune actualité.</p>
+    {{/news}}
+  </div>
+
+  <div class="bottom-schools">
+    <h2>🏫 Écoles</h2>
+    <ul class="school-categories">
+      {{#schools}}
+        <li><a href="{{url}}">{{name}}</a></li>
+      {{/schools}}
+      {{^schools}}
+        <li>Aucune école disponible.</li>
+      {{/schools}}
+    </ul>
+  </div>
 </div>

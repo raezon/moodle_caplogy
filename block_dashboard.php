@@ -1,5 +1,6 @@
 <?php
-require_once($CFG->dirroot . '/calendar/lib.php');
+require_once($CFG->dirroot . '/blocks/calendar_upcoming/block_calendar_upcoming.php');
+
 
 class block_dashboard extends block_base
 {
@@ -20,22 +21,21 @@ class block_dashboard extends block_base
             return $this->content;
         }
 
-        //  require_once($CFG->dirroot . '/calendar/lib.php');
-        //   require_once($CFG->dirroot . '/calendar/classes/calendar_information.php');
+  
 
         $this->content = new stdClass();
 
         $time = time();
         $courseid = SITEID;
 
-        // Création de l'objet calendar_information pour le mois courant du site
-        //   $calendarinfo = \core_calendar\calendar_information::create($courseid, $time, 'month', false, false);
+        // Render the upcoming calendar block.
+        $calendarblock = new \block_calendar_upcoming();
+        $calendarblock->page = $PAGE; // Fix: inject current page context
+        $calendarblock->course = $PAGE->course ?? (object) ['id' => SITEID]; // Fix: force valid course id
+        $calendarblock->init();
+        $calendarcontent = $calendarblock->get_content();
 
-        // Récupération du renderer calendrier
-        // $renderer = $PAGE->get_renderer('core_calendar');
 
-        // Génération du HTML du mini calendrier
-        //    $calendar_html = $renderer->month_view($calendarinfo);
 
         // Date du jour
         $today = usergetdate($time);
@@ -59,6 +59,7 @@ class block_dashboard extends block_base
         // Préparation des données pour le template Mustache
         $templatecontext = [
             // 'calendar' => $calendar_html,
+            'calendar' => $calendarcontent->text ?? '',
             'todaycourses' => $today_courses,
             'hascourses' => !empty($today_courses),
             'allcoursesurl' => $allcoursesurl
