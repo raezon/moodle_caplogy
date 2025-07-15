@@ -1,0 +1,58 @@
+.dashboard-flex {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.dashboard-left,
+.dashboard-right {
+    flex: 1;
+    padding: 10px;
+    background-color: #f7f9fc;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.dashboard-left h4,
+.dashboard-right h4 {
+    margin-bottom: 10px;
+    color: #1a73e8;
+}
+
+.today-courses {
+    list-style: none;
+    padding-left: 0;
+}
+
+.today-courses li {
+    margin-bottom: 6px;
+}
+
+.today-courses a {
+    text-decoration: none;
+    color: #333;
+}
+
+.today-courses a:hover {
+    text-decoration: underline;
+    color: #1a73e8;
+}
+
+.dashboard-bottom {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.btn-allcourses {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #1a73e8;
+    color: white !important;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.btn-allcourses:hover {
+    background-color: #155ab6;
+}

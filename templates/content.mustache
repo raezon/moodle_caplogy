@@ -1,0 +1,24 @@
+<div class="dashboard-flex">
+  <div class="dashboard-left">
+    <h4>📅 Calendrier</h4>
+    {{{calendar}}}
+  </div>
+
+  <div class="dashboard-right">
+    <h4>📘 Cours d’aujourd’hui</h4>
+    {{#hascourses}}
+      <ul class="today-courses">
+        {{#todaycourses}}
+          <li><a href="{{url}}">{{fullname}}</a></li>
+        {{/todaycourses}}
+      </ul>
+    {{/hascourses}}
+    {{^hascourses}}
+      <p>Aucun cours aujourd’hui.</p>
+    {{/hascourses}}
+  </div>
+</div>
+
+<div class="dashboard-bottom">
+  <a class="btn-allcourses" href="{{allcoursesurl}}">Voir tous mes cours ➜</a>
+</div>

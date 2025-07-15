@@ -1,56 +1,76 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+require_once($CFG->dirroot . '/calendar/lib.php');
 
-use core_external\util as external_util;
-
-/**
- * Form for editing HTML block instances.
- *
- * @package   block_dashboard
- * @copyright 2125 Djebabla Ammar
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class block_dashboard extends block_base {
-    function init() {
+class block_dashboard extends block_base
+{
+    public function init()
+    {
         $this->title = get_string('pluginname', 'block_dashboard');
     }
 
+    public function get_required_capabilities()
+    {
+        return ['block/dashboard:view'];
+    }
+    public function get_content()
+    {
+        global $USER, $PAGE, $OUTPUT, $CFG;
 
-    function get_content() {
-        global $DB;
-        if ($this->content !== NULL) {
+        if ($this->content !== null) {
             return $this->content;
         }
 
-        $output = "";
-        $users = $DB->get_records('user');
+        //  require_once($CFG->dirroot . '/calendar/lib.php');
+        //   require_once($CFG->dirroot . '/calendar/classes/calendar_information.php');
 
-        foreach ($users as $user) {
-            $output .= $user->firstname . ' ' . $user->lastname . '</br>';
+        $this->content = new stdClass();
+
+        $time = time();
+        $courseid = SITEID;
+
+        // Création de l'objet calendar_information pour le mois courant du site
+        //   $calendarinfo = \core_calendar\calendar_information::create($courseid, $time, 'month', false, false);
+
+        // Récupération du renderer calendrier
+        // $renderer = $PAGE->get_renderer('core_calendar');
+
+        // Génération du HTML du mini calendrier
+        //    $calendar_html = $renderer->month_view($calendarinfo);
+
+        // Date du jour
+        $today = usergetdate($time);
+        $today_yday = $today['yday'];
+
+        // Récupération des cours où l'utilisateur est inscrit
+        $courses = enrol_get_users_courses($USER->id, true, '*');
+        $today_courses = [];
+
+        foreach ($courses as $course) {
+            if (usergetdate($course->startdate)['yday'] == $today_yday) {
+                $today_courses[] = [
+                    'fullname' => format_string($course->fullname),
+                    'url' => (new moodle_url('/course/view.php', ['id' => $course->id]))->out(false)
+                ];
+            }
         }
 
+        $allcoursesurl = (new moodle_url('/my/courses.php'))->out(false);
 
-        $this->content = new stdClass;
-        $this->content->footer = $output;
-        $this->content->text = 'This is a footer';
-        
+        // Préparation des données pour le template Mustache
+        $templatecontext = [
+            // 'calendar' => $calendar_html,
+            'todaycourses' => $today_courses,
+            'hascourses' => !empty($today_courses),
+            'allcoursesurl' => $allcoursesurl
+        ];
 
-        unset($filteropt); // memory footprint
+        // Rendu avec template
+        $this->content->text = $OUTPUT->render_from_template('block_dashboard/content', $templatecontext);
+        $this->content->footer = '';
+
+        // Chargement CSS personnalisé optionnel
+        $PAGE->requires->css(new moodle_url('/blocks/dashboard/styles.css'));
 
         return $this->content;
     }
-
 }
