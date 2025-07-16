@@ -28,11 +28,11 @@ class block_dashboard extends block_base
         $timefrom = time();
         $timeto = $timefrom + 30 * 24 * 60 * 60; // 30 jours
 
-        // Récupérer les événements dans les 30 jours (globaux ou personnels)
+        // Récupérer les événements dans les 30 jours
         $sql = "SELECT e.*
                 FROM {event} e
                 WHERE e.timestart BETWEEN :timefrom AND :timeto
-                AND (e.userid = :userid OR e.courseid = 1)"; // courseid=1 = site home
+                AND (e.userid = :userid)"; // courseid=1 = site home
 
         $params = [
             'timefrom' => $timefrom,
@@ -51,7 +51,38 @@ class block_dashboard extends block_base
             ];
         }
 
-        // Récupérer les cours où l'utilisateur est inscrit et qui commencent aujourd’hui
+        // Cours commençant aujourd’hui
+        $today_courses = $this->get_current_course($USER, $timefrom);
+
+
+        $schools = $this->get_current_schools();
+
+        $allcoursesurl = (new moodle_url('/my/courses.php'))->out(false);
+
+        // 📦 Ajouter les articles du blog
+        $blogposts = $this->get_blog_posts();
+
+        // 📋 Préparer les données pour le template
+        $templatecontext = [
+            'calendarevents' => $calendarevents,
+            'todaycourses' => $today_courses,
+            'hascourses' => !empty($today_courses),
+            'allcoursesurl' => $allcoursesurl,
+            'schools' => $schools,
+            'blogposts' => $blogposts,
+            'hasblog' => !empty($blogposts),
+        ];
+
+        $this->content->text = $OUTPUT->render_from_template('block_dashboard/content', $templatecontext);
+        $this->content->footer = '';
+
+        $PAGE->requires->css(new moodle_url('/blocks/dashboard/styles.css'));
+
+        return $this->content;
+    }
+
+    private function get_current_course($USER,$timefrom):array{
+
         $courses = enrol_get_users_courses($USER->id, true, '*');
         $today_yday = usergetdate($timefrom)['yday'];
         $today_courses = [];
@@ -65,7 +96,16 @@ class block_dashboard extends block_base
             }
         }
 
-        // Récupérer les catégories racines (écoles)
+
+        return $today_courses;
+    }
+
+
+    private function get_current_schools(): array
+    {
+
+
+        // Catégories racines = écoles
         $categories = core_course_category::get_all(true, 0, true);
         $schools = [];
         foreach ($categories as $cat) {
@@ -76,23 +116,35 @@ class block_dashboard extends block_base
                 'url' => (new moodle_url('/course/index.php', ['categoryid' => $cat->id]))->out(false),
             ];
         }
+        return $schools;
+    }
+    /**
+     * Récupère les 3 derniers articles de blog (cours dans la catégorie Blog).
+     */
+    private function get_blog_posts(): array
+    {
+        global $DB, $OUTPUT;
 
-        $allcoursesurl = (new moodle_url('/my/courses.php'))->out(false);
+        $blogcategoryid = 10; // À adapter selon ton Moodle
+        $blogcourses = $DB->get_records('course', ['category' => $blogcategoryid], 'startdate DESC', '*', 0, 3);
 
-        // Préparer le contexte pour le template Mustache
-        $templatecontext = [
-            'calendarevents' => $calendarevents,
-            'todaycourses' => $today_courses,
-            'hascourses' => !empty($today_courses),
-            'allcoursesurl' => $allcoursesurl,
-            'schools' => $schools,
-        ];
+        $posts = [];
 
-        $this->content->text = $OUTPUT->render_from_template('block_dashboard/content', $templatecontext);
-        $this->content->footer = '';
+        foreach ($blogcourses as $course) {
+            $imageurl = $OUTPUT->image_url('course/defaultcourseimage', 'theme')->out(false); // par défaut
 
-        $PAGE->requires->css(new moodle_url('/blocks/dashboard/styles.css'));
+            if (preg_match('/<img.*?src=["\'](.*?)["\']/', $course->summary, $matches)) {
+                $imageurl = $matches[1];
+            }
 
-        return $this->content;
+            $posts[] = [
+                'title' => format_string($course->fullname),
+                'description' => format_text($course->summary, FORMAT_HTML),
+                'url' => (new moodle_url('/course/view.php', ['id' => $course->id]))->out(false),
+                'image' => $imageurl,
+            ];
+        }
+
+        return $posts;
     }
 }

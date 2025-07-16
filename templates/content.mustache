@@ -30,3 +30,23 @@
   
 </div>
 
+<div class="dashboard-blogs">
+  <h4>📰 Derniers articles</h4>
+  {{#hasblog}}
+  <div class="blog-grid">
+    {{#blogposts}}
+    <div class="blog-card">
+      <img src="{{image}}" alt="{{title}}">
+      <div class="blog-content">
+        <h5>{{title}}</h5>
+        <p>{{{description}}}</p>
+        <a href="{{url}}" class="btn-readmore">Lire la suite ➜</a>
+      </div>
+    </div>
+    {{/blogposts}}
+  </div>
+  {{/hasblog}}
+  {{^hasblog}}
+    <p>Aucun article de blog disponible.</p>
+  {{/hasblog}}
+</div>
