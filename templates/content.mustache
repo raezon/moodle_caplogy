@@ -1,52 +1,156 @@
 <div class="dashboard-flex">
-
   <div class="dashboard-left">
-    <h4>📅 Événements à venir</h4>
-    {{#calendarevents}}
-      <div class="event-card">
-        <strong>{{title}}</strong><br>
-        <small>{{date}}</small>
-        <div>{{{description}}}</div>
-      </div>
-    {{/calendarevents}}
-    {{^calendarevents}}
-      <p>Aucun événement à venir.</p>
-    {{/calendarevents}}
+    <h4>📅 Événements à venir – Juillet 2025</h4>
+    <table class="calendar-table">
+      <thead>
+        <tr>
+          <th>Lun</th>
+          <th>Mar</th>
+          <th>Mer</th>
+          <th>Jeu</th>
+          <th>Ven</th>
+          <th>Sam</th>
+          <th>Dim</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td></td>
+          <td>1</td>
+          <td>2</td>
+          <td>3<br><span class="event">Réunion pédagogique</span></td>
+          <td>4</td>
+          <td>5</td>
+          <td>6</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>8</td>
+          <td>9</td>
+          <td>10<br><span class="event">Webinaire Moodle</span></td>
+          <td>11</td>
+          <td>12</td>
+          <td>13</td>
+        </tr>
+        <tr>
+          <td>14</td>
+          <td>15</td>
+          <td>16</td>
+          <td>17</td>
+          <td>18<br><span class="event">Correction finale</span></td>
+          <td>19</td>
+          <td>20</td>
+        </tr>
+        <tr>
+          <td>21</td>
+          <td>22</td>
+          <td>23</td>
+          <td>24</td>
+          <td>25<br><span class="event">Présentation projet</span></td>
+          <td>26</td>
+          <td>27</td>
+        </tr>
+        <tr>
+          <td>28</td>
+          <td>29</td>
+          <td>30</td>
+          <td>31</td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <div class="dashboard-right">
-    <h4>📘 Cours qui commencent aujourd’hui</h4>
-    {{#hascourses}}
-      <ul class="today-courses">
-        {{#todaycourses}}
-          <li><a href="{{url}}">{{fullname}}</a></li>
-        {{/todaycourses}}
-      </ul>
-    {{/hascourses}}
-    {{^hascourses}}
-      <p>Aucun cours aujourd’hui.</p>
-    {{/hascourses}}
+    <h4>⏰ Rappels du jour</h4>
+    <ul class="today-reminders">
+      <li>📤 Corriger les devoirs du groupe B</li>
+      <li>💬 Répondre au forum de la classe Java</li>
+      <li>📥 Télécharger les supports pour le cours de demain</li>
+    </ul>
   </div>
-  
 </div>
+<hr>
+
+<div class="courses-grid">
+  {{#lastCourses}}
+  <div class="course-card">
+    <img src="{{url("{{{courseimage}}}")}}" alt="{{fullname}}">
+    <div class="course-content">
+      <h5>{{fullname}}</h5>
+      <p>{{summary}}</p>
+      <a href="{{url}}" class="btn-enter">Accéder au cours ➜</a>
+    </div>
+  </div>
+  {{/lastCourses}}
+</div>
+
+{{^lastCourses}}
+<p>Aucun cours récemment consulté.</p>
+{{/lastCourses}}
+
+<hr>
+
+<div class="dashboard-flex">
+  <div class="dashboard-half">
+    <h4>🧰 Ressources pratiques</h4>
+    <ul class="resources-list">
+      <li><a href="#">📘 Guide Moodle</a></li>
+      <li><a href="#">🧪 Créer un quiz</a></li>
+      <li><a href="#">📁 Importer des questions</a></li>
+      <li><a href="#">📄 Modèle de plan de cours</a></li>
+    </ul>
+  </div>
+
+  <div class="dashboard-half">
+    <h4>🧭 Accès rapide</h4>
+    <ul class="quick-links">
+      <li><a href="#">🎓 Tous mes cours</a></li>
+      <li><a href="#">📥 Téléversements récents</a></li>
+      <li><a href="#">🧑‍💼 Contacts pédagogiques</a></li>
+      <li><a href="#">📌 Mes évaluations</a></li>
+    </ul>
+  </div>
+</div>
+
+
+<hr>
 
 <div class="dashboard-blogs">
   <h4>📰 Derniers articles</h4>
-  {{#hasblog}}
   <div class="blog-grid">
-    {{#blogposts}}
+
     <div class="blog-card">
-      <img src="{{image}}" alt="{{title}}">
+      <img src="https://caplogy-73d389cdf6e3.herokuapp.com/media/photos/WhatsApp_Image_2024-06-27_%C3%A0_09.11.22_01b75e2e.jpg" alt="Présentation de Mi-Parcours des Stagiaires">
       <div class="blog-content">
-        <h5>{{title}}</h5>
-        <p>{{{description}}}</p>
-        <a href="{{url}}" class="btn-readmore">Lire la suite ➜</a>
+        <h5>Présentation de Mi-Parcours des Stagiaires</h5>
+        <p>Une présentation réalisée par nos chers stagiaires représentant chacun l'avancement de leur projet.</p>
+        <small>25-06-2024</small><br>
+        <a href="#" class="btn-readmore">Voir plus ➜</a>
       </div>
     </div>
-    {{/blogposts}}
+
+    <div class="blog-card">
+      <img src="https://caplogy-73d389cdf6e3.herokuapp.com/media/photos/equipe.jpeg" alt="Journée anniversaire du mois de Juin">
+      <div class="blog-content">
+        <h5>Journée anniversaire du mois de Juin</h5>
+        <p>Nous fêtons les anniversaires des membres de notre équipe, nés en juin</p>
+        <small>20-06-2024 </small><br>
+        <a href="#" class="btn-readmore">Voir plus ➜</a>
+      </div>
+    </div>
+
+    <div class="blog-card">
+      <img src="https://caplogy-73d389cdf6e3.herokuapp.com/media/photos/CFP_Image.png" height="200px" alt="Session spéciale dans la conférence IPTA">
+      <div class="blog-content">
+        <h5>Session spéciale dans la conférence IPTA</h5>
+        <p>Advancements in Object Detection: Harnessing Non-Conventional Sensors and Sensor Fusion</p>
+        <small>14-10-2024</small><br>
+        <a href="#" class="btn-readmore">Voir plus ➜</a>
+      </div>
+    </div>
+
   </div>
-  {{/hasblog}}
-  {{^hasblog}}
-    <p>Aucun article de blog disponible.</p>
-  {{/hasblog}}
 </div>

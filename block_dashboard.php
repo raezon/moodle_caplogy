@@ -54,6 +54,9 @@ class block_dashboard extends block_base
         // Cours commençant aujourd’hui
         $today_courses = $this->get_current_course($USER, $timefrom);
 
+        // last access courses
+        $lastCourses = $this->fetch_last_accessed_courses_data($USER->id);
+
 
         $schools = $this->get_current_schools();
 
@@ -65,7 +68,7 @@ class block_dashboard extends block_base
         // 📋 Préparer les données pour le template
         $templatecontext = [
             'calendarevents' => $calendarevents,
-            'todaycourses' => $today_courses,
+            'lastCourses' => $lastCourses,
             'hascourses' => !empty($today_courses),
             'allcoursesurl' => $allcoursesurl,
             'schools' => $schools,
@@ -81,7 +84,8 @@ class block_dashboard extends block_base
         return $this->content;
     }
 
-    private function get_current_course($USER,$timefrom):array{
+    private function get_current_course($USER, $timefrom): array
+    {
 
         $courses = enrol_get_users_courses($USER->id, true, '*');
         $today_yday = usergetdate($timefrom)['yday'];
@@ -118,6 +122,50 @@ class block_dashboard extends block_base
         }
         return $schools;
     }
+
+
+    /**
+     * Retourne les données formatées des 3 derniers cours consultés par l'utilisateur.
+     *
+     * @param int $userid
+     * @param int $limit
+     * @return array
+     */
+    function fetch_last_accessed_courses_data(int $userid, int $limit = 3): array
+    {
+        global $DB;
+
+        // Récupérer tous les accès récents, on tronque après
+        $courses = enrol_get_users_courses($userid, true, '*');
+
+        usort($courses, function ($a, $b) {
+            return $b->lastaccess <=> $a->lastaccess;
+        });
+
+        $courses = array_slice($courses, 0, $limit);
+
+        $data = ['courses' => []];
+
+        foreach ($courses as $course) {
+            $summary = strip_tags($course->summary);
+            if (strlen($summary) > 100) {
+                $summary = substr($summary, 0, 100) . '...';
+            }
+
+            $image = "https://www.placeholderimage.eu/api/800/600?category=education&imageId=" . ($course->id % 10 + 1);
+
+            $data['courses'][] = [
+                'id' => $course->id,
+                'fullname' => $course->fullname,
+                'summary' => $summary,
+                'image' => $image,
+                'url' => (new moodle_url('/course/view.php', ['id' => $course->id]))->out(false),
+            ];
+        }
+
+        return $data['courses'];
+    }
+
     /**
      * Récupère les 3 derniers articles de blog (cours dans la catégorie Blog).
      */

@@ -68,6 +68,11 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    transition: transform 0.2s ease-in-out;
+}
+
+.blog-card:hover {
+    transform: translateY(-4px);
 }
 
 .blog-card img {
@@ -78,19 +83,249 @@
 
 .blog-content {
     padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
 }
 
 .blog-content h5 {
     margin: 0 0 0.5em;
     font-size: 1.1em;
+    color: #222;
+}
+
+.blog-content p {
+    flex-grow: 1;
+    font-size: 0.95em;
+    color: #555;
 }
 
 .btn-readmore {
     display: inline-block;
     margin-top: 10px;
-    color: #fff;
-    background-color: #0073e6;
+    background-color: #084b8a !important;
+    border-color: #084b8a !important;
+    color: white !important;
     padding: 8px 14px;
     text-decoration: none;
-    border-radius: 5px;
+    font-size: 0.9em;
+    transition: background-color 0.2s;
+}
+
+.btn-readmore:hover {
+    background-color: #6ecddd;
+}
+
+/* 🌐 Responsive layout */
+@media screen and (max-width: 768px) {
+    .blog-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .blog-card {
+        flex-direction: column;
+    }
+
+    .blog-card img {
+        height: 160px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .blog-content {
+        padding: 12px;
+    }
+
+    .blog-content h5 {
+        font-size: 1em;
+    }
+
+    .btn-readmore {
+        padding: 6px 12px;
+        font-size: 0.85em;
+    }
+}
+
+/* Dashboard css */
+.dashboard-flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.dashboard-left,
+.dashboard-right,
+.dashboard-resources,
+.dashboard-blogs {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    width: 100%;
+}
+
+.dashboard-left {
+    flex: 0 0 70%;
+}
+
+.dashboard-right {
+    flex: 1;
+}
+
+.calendar-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+.calendar-table th,
+.calendar-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    vertical-align: top;
+}
+
+.calendar-table .event {
+    background: #084b8a;
+    color: white;
+    font-size: 0.75em;
+    margin-top: 5px;
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.today-reminders li,
+.resources-list li {
+    margin-bottom: 0.5rem;
+}
+
+
+.blog-card {
+    flex: 1 1 30%;
+    background: #f9f9f9;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+
+.blog-content {
+    padding: 1rem;
+}
+
+.btn-readmore {
+    display: inline-block;
+    margin-top: 0.5rem;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+
+.dashboard-flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.dashboard-half {
+    flex: 1 1 48%;
+    background: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.resources-list li,
+.quick-links li {
+    margin-bottom: 0.5rem;
+}
+
+/*** cart courses **/
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 1em;
+}
+
+.course-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease-in-out;
+}
+
+.course-card:hover {
+    transform: translateY(-4px);
+}
+
+.course-card img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+}
+
+.course-content {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.course-content h5 {
+    margin: 0 0 0.5em;
+    font-size: 1.1em;
+    color: #222;
+}
+
+.course-content p {
+    flex-grow: 1;
+    font-size: 0.95em;
+    color: #555;
+}
+
+.btn-enter {
+    display: inline-block;
+    margin-top: 10px;
+    background-color: #084b8a !important;
+    border-color: #084b8a !important;
+    color: white !important;
+    padding: 8px 14px;
+    text-decoration: none;
+    font-size: 0.9em;
+    transition: background-color 0.2s;
+}
+
+.btn-enter:hover {
+    background-color: #6ecddd;
+}
+
+/* 🌐 Responsive */
+@media screen and (max-width: 768px) {
+    .courses-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .course-card img {
+        height: 140px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .course-content {
+        padding: 12px;
+    }
+
+    .course-content h5 {
+        font-size: 1em;
+    }
+
+    .btn-enter {
+        padding: 6px 12px;
+        font-size: 0.85em;
+    }
 }
