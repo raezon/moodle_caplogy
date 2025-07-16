@@ -2,6 +2,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 use core_course_category;
+use core_course\external\course_summary_exporter;
 
 class block_dashboard extends block_base
 {
@@ -133,18 +134,20 @@ class block_dashboard extends block_base
      */
     function fetch_last_accessed_courses_data(int $userid, int $limit = 3): array
     {
-        global $DB;
+        global $OUTPUT;
 
-        // Récupérer tous les accès récents, on tronque après
+        // Récupérer tous les cours inscrits à l’utilisateur
         $courses = enrol_get_users_courses($userid, true, '*');
 
+        // Trier par lastaccess décroissant
         usort($courses, function ($a, $b) {
             return $b->lastaccess <=> $a->lastaccess;
         });
 
+        // Ne garder que les $limit premiers
         $courses = array_slice($courses, 0, $limit);
 
-        $data = ['courses' => []];
+        $data = [];
 
         foreach ($courses as $course) {
             $summary = strip_tags($course->summary);
@@ -152,19 +155,56 @@ class block_dashboard extends block_base
                 $summary = substr($summary, 0, 100) . '...';
             }
 
-            $image = "https://www.placeholderimage.eu/api/800/600?category=education&imageId=" . ($course->id % 10 + 1);
+            // Récupérer l’image officielle via course_summary_exporter
+            $imageurl = course_summary_exporter::get_course_image($course);
 
-            $data['courses'][] = [
+            // Si pas d’image, image par défaut Moodle
+            if (!$imageurl) {
+                $imageurl = $OUTPUT->image_url('course/defaultcourseimage', 'theme')->out(false);
+            }
+
+            $data[] = [
                 'id' => $course->id,
                 'fullname' => $course->fullname,
                 'summary' => $summary,
-                'image' => $image,
+                'image' => $imageurl,
                 'url' => (new moodle_url('/course/view.php', ['id' => $course->id]))->out(false),
             ];
         }
 
-        return $data['courses'];
+        return $data;
     }
+
+
+
+    /**
+     * Retourne l'URL de l'image d'aperçu du cours, ou une image par défaut.
+     */
+    function get_course_overview_image_url(int $courseid): string
+    {
+        global $OUTPUT;
+
+        $context = context_course::instance($courseid);
+        $fs = get_file_storage();
+
+        $files = $fs->get_area_files($context->id, 'course', 'overviewfiles', 0, 'sortorder DESC, id DESC', false);
+
+        if (!empty($files)) {
+            $file = reset($files);
+            return moodle_url::make_pluginfile_url(
+                $file->get_contextid(),
+                $file->get_component(),
+                $file->get_filearea(),
+                $file->get_itemid(),
+                $file->get_filepath(),
+                $file->get_filename()
+            )->out(false);
+        }
+
+        // Si aucune image d'aperçu, retourne l'image par défaut
+        return $OUTPUT->image_url('course/defaultcourseimage', 'theme')->out(false);
+    }
+
 
     /**
      * Récupère les 3 derniers articles de blog (cours dans la catégorie Blog).
