@@ -3,6 +3,9 @@ defined('MOODLE_INTERNAL') || die();
 
 use core_course_category;
 use core_course\external\course_summary_exporter;
+use core_calendar\local\api as calendar_api;
+
+
 
 class block_dashboard extends block_base
 {
@@ -25,32 +28,16 @@ class block_dashboard extends block_base
         }
 
         $this->content = new stdClass();
-
         $timefrom = time();
         $timeto = $timefrom + 30 * 24 * 60 * 60; // 30 jours
 
         // Récupérer les événements dans les 30 jours
-        $sql = "SELECT e.*
-                FROM {event} e
-                WHERE e.timestart BETWEEN :timefrom AND :timeto
-                AND (e.userid = :userid)"; // courseid=1 = site home
+        $month = date('n');
+        $year = date('Y');
+        $events = $this->get_upcoming_events_for_month($month, $year, $USER);
+      //  $calendar_data = $this->prepare_calendar_template_data($month, $year, $events);
 
-        $params = [
-            'timefrom' => $timefrom,
-            'timeto' => $timeto,
-            'userid' => $USER->id
-        ];
 
-        $events = $DB->get_records_sql($sql, $params);
-
-        $calendarevents = [];
-        foreach ($events as $event) {
-            $calendarevents[] = [
-                'title' => format_string($event->name),
-                'description' => format_text($event->description, FORMAT_HTML),
-                'date' => userdate($event->timestart, '%d %B %Y, %H:%M'),
-            ];
-        }
 
         // Cours commençant aujourd’hui
         $today_courses = $this->get_current_course($USER, $timefrom);
@@ -64,16 +51,16 @@ class block_dashboard extends block_base
         $allcoursesurl = (new moodle_url('/my/courses.php'))->out(false);
 
         // 📦 Ajouter les articles du blog
-        $blogposts = $this->get_blog_posts();
+      //  $blogposts = $this->get_blog_posts();
 
         // 📋 Préparer les données pour le template
         $templatecontext = [
-            'calendarevents' => $calendarevents,
+            'calendarevents' => [],
             'lastCourses' => $lastCourses,
             'hascourses' => !empty($today_courses),
             'allcoursesurl' => $allcoursesurl,
             'schools' => $schools,
-            'blogposts' => $blogposts,
+            'blogposts' => [],
             'hasblog' => !empty($blogposts),
         ];
 
@@ -84,6 +71,94 @@ class block_dashboard extends block_base
 
         return $this->content;
     }
+
+    /**
+     * Summary of prepare_calendar_template_data
+     * @param mixed $month
+     * @param mixed $year
+     * @param mixed $events
+     * @return array{days: string[], monthname: mixed, weeks: array}
+     */
+    function prepare_calendar_template_data($month, $year, $events)
+    {
+        $days = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+        $calendar = [];
+
+        $firstday = mktime(0, 0, 0, $month, 1, $year);
+        $dayofweek = date('N', $firstday); // 1 = Lundi
+        $numdays = date('t', $firstday);
+
+        $currentday = 1;
+        $week = [];
+
+        for ($i = 1; $i < $dayofweek; $i++) {
+            $week[] = ['day' => '', 'events' => []];
+        }
+
+        while ($currentday <= $numdays) {
+            $dayevents = [];
+            foreach ($events as $event) {
+                if ((int) date('j', $event['timestart']) == $currentday) {
+                    $dayevents[] = ['name' => $event['name']];
+                }
+            }
+
+            $week[] = ['day' => $currentday, 'events' => $dayevents];
+
+            if (count($week) == 7) {
+                $calendar[] = $week;
+                $week = [];
+            }
+
+            $currentday++;
+        }
+
+        while (count($week) < 7) {
+            $week[] = ['day' => '', 'events' => []];
+        }
+
+        $calendar[] = $week;
+
+        return [
+            'monthname' => userdate($firstday, '%B %Y'),
+            'days' => $days,
+            'weeks' => $calendar
+        ];
+    }
+
+
+    /**
+     * Summary of get_upcoming_events_for_month
+     * @param mixed $month
+     * @param mixed $year
+     * @param mixed $userid
+     */
+    function get_upcoming_events_for_month($month, $year, $userid = null)
+    {
+        global $USER;
+
+
+
+        $starttime = make_timestamp($year, $month, 1);
+        $endtime = make_timestamp($year, $month + 1, 1) - 1;
+
+        // Récupère uniquement les événements visibles à l'utilisateur
+
+        $events = calendar_get_legacy_events($starttime, $endtime, $USER->id);
+
+
+        $eventlist = [];
+        foreach ($events as $event) {
+            $eventlist[] = [
+                'name' => $event->name,
+                'timestart' => $event->timestart,
+            ];
+        }
+
+        return $eventlist;
+    }
+
+
 
     private function get_current_course($USER, $timefrom): array
     {
@@ -132,7 +207,7 @@ class block_dashboard extends block_base
      * @param int $limit
      * @return array
      */
-    function fetch_last_accessed_courses_data(int $userid, int $limit = 3): array
+    private function fetch_last_accessed_courses_data(int $userid, int $limit = 3): array
     {
         global $OUTPUT;
 
@@ -180,7 +255,7 @@ class block_dashboard extends block_base
     /**
      * Retourne l'URL de l'image d'aperçu du cours, ou une image par défaut.
      */
-    function get_course_overview_image_url(int $courseid): string
+    private function get_course_overview_image_url(int $courseid): string
     {
         global $OUTPUT;
 
@@ -209,7 +284,7 @@ class block_dashboard extends block_base
     /**
      * Récupère les 3 derniers articles de blog (cours dans la catégorie Blog).
      */
-    private function get_blog_posts(): array
+    /*private function get_blog_posts(): array
     {
         global $DB, $OUTPUT;
 
@@ -234,5 +309,5 @@ class block_dashboard extends block_base
         }
 
         return $posts;
-    }
+    }*/
 }
