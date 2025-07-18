@@ -34,7 +34,7 @@ class block_dashboard extends block_base
         // Récupérer les événements dans les 30 jours
         $month = date('n');
         $year = date('Y');
-        $events = $this->get_upcoming_events_for_month($month, $year, $USER);
+        $eventdays = $this->get_upcoming_events_for_month($month, $year, $USER);
       //  $calendar_data = $this->prepare_calendar_template_data($month, $year, $events);
 
 
@@ -55,7 +55,7 @@ class block_dashboard extends block_base
 
         // 📋 Préparer les données pour le template
         $templatecontext = [
-            'calendarevents' => [],
+            'eventdays' => $eventdays,
             'lastCourses' => $lastCourses,
             'hascourses' => !empty($today_courses),
             'allcoursesurl' => $allcoursesurl,
@@ -135,28 +135,86 @@ class block_dashboard extends block_base
      */
     function get_upcoming_events_for_month($month, $year, $userid = null)
     {
-        global $USER;
+        global $USER,$DB;
 
+        $now = time();
 
+        // Requête pour tous les événements futurs visibles par l'utilisateur
+        $sql = "SELECT e.* FROM {event} e";
 
-        $starttime = make_timestamp($year, $month, 1);
-        $endtime = make_timestamp($year, $month + 1, 1) - 1;
+        $params = [
+            'now' => $now,
+            'userid' => $USER->id
+        ];
 
-        // Récupère uniquement les événements visibles à l'utilisateur
+        // Exécuter la requête
+        $events = $DB->get_records_sql($sql, $params);
 
-        $events = calendar_get_legacy_events($starttime, $endtime, $USER->id);
-
-
-        $eventlist = [];
+        // Construire une carte jour => événements
+        $eventmap = [];
         foreach ($events as $event) {
-            $eventlist[] = [
-                'name' => $event->name,
-                'timestart' => $event->timestart,
+            $date = userdate($event->timestart, '%Y-%m-%d');
+            $eventmap[$date][] = [
+                'name' => format_string($event->name),
+                'time' => userdate($event->timestart, '%H:%M'),
+            ];
+        }
+        
+
+        // Créer la structure du mois courant
+        $monthstart = strtotime(date('Y-m-01', $now));
+        
+
+        // On part du lundi de la première semaine du mois
+        $firstday = date('w', $monthstart);
+        $firstday = ($firstday == 0) ? 6 : $firstday - 1; // Lundi = 0
+        $gridstart = strtotime("-$firstday day", $monthstart);
+
+        // Générer les semaines et jours
+        // Transforme en tableau indexé attendu par Mustache
+        $eventdays = [];
+        foreach ($eventmap as $date => $events) {
+            // S'assurer que $events est un tableau
+            if (!is_array($events)) {
+                $events = [];
+            }
+            $eventdays[] = [
+                'date' => $date,
+                'events' => $events,
             ];
         }
 
-        return $eventlist;
+         // Appeler la fonction qui génère la grille calendrier avec événements
+        //return $this->render_custom_calendar($eventdays, $month, $year);
+
+        // Structure à envoyer à Mustache
+       return $eventmap;
+
+
     }
+
+    // Fonction qui génère la grille du calendrier avec les événements associés.
+    function render_custom_calendar($month, $year, $eventmap)
+    {
+        global $PAGE, $OUTPUT, $USER;
+
+        // Prépare les événements personnalisés
+        $events = build_custom_events($eventmap);
+
+        // Paramètres du calendrier
+        $calendar = new \core_calendar\type_standard();
+        $calendardata = calendar_get_mini($month, $year, true, true, $USER->id);
+
+        // Injecte tes événements dans les bons jours
+        foreach ($events as $event) {
+            $day = date('j', $event->timestart);
+            $calendardata['events'][$day][] = $event;
+        }
+
+        // Rendu HTML
+        return calendar_get_mini_html($month, $year, $events);
+    }
+
 
 
 
