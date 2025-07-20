@@ -1,31 +1,8 @@
 <div class="dashboard-flex">
 <div class="dashboard-left">
-  <h4>📅 Événements à venir – {{calendarevents.monthname}}</h4>
-   <table class="calendar">
-      <thead>
-          <tr>
-              <th>Lun</th>
-              <th>Mar</th>
-              <th>Mer</th>
-              <th>Jeu</th>
-              <th>Ven</th>
-              <th>Sam</th>
-              <th>Dim</th>
-          </tr>
-      </thead>
-      <tbody>
-          {{#eventdays}}
-          <tr>
-              <td>
-                  <strong class="strong">{{date}}</strong><br>
-                  {{#events}}
-                      <div>{{time}} - {{name}}</div>
-                  {{/events}}
-              </td>
-          </tr>
-          {{/eventdays}}
-      </tbody>
-  </table>
+  <h4>📅 Événements à venir </h4>
+    <div id="calendar"></div>
+
 </div>
 
 

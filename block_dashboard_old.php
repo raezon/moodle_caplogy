@@ -68,90 +68,6 @@ class block_dashboard extends block_base
         $this->content->footer = '';
 
         $PAGE->requires->css(new moodle_url('/blocks/dashboard/styles.css'));
-        // Injecter les événements JSON en JS inline
-        $json_events = json_encode($eventdays);
-
-        $json_year = json_encode($year);
-        $json_month = json_encode($month);
-        // Injecter JS dynamique pour générer calendrier
-        $PAGE->requires->js_init_code(<<<JS
-document.addEventListener('DOMContentLoaded', function() {
-    const calendarElement = document.getElementById('calendar');
-    if (!calendarElement) return;
-
-    const events = $json_events;
-    const year = $json_year;
-    const month = $json_month;
-
-    const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-
-    let html = '<table border="1" style="border-collapse: collapse; width: 100%;">';
-    html += '<thead><tr>';
-    daysOfWeek.forEach(function(day) {
-        html += '<th style="padding:5px; background:#eee;">' + day + '</th>';
-    });
-    html += '</tr></thead>';
-
-    const firstDay = new Date(year, month - 1, 1);
-    let startWeekday = firstDay.getDay(); // 0=dimanche, 1=lundi, etc.
-    if (startWeekday === 0) startWeekday = 7; // dimanche = 7
-
-    const daysInMonth = new Date(year, month, 0).getDate();
-
-    let day = 1;
-    html += '<tbody><tr>';
-
-    // Cases vides avant premier jour du mois
-    for (let i = 1; i < startWeekday; i++) {
-        html += '<td></td>';
-    }
-
-    // Remplissage du premier rang
-    for (let i = startWeekday; i <= 7; i++) {
-        const dateKey = year + '-' + String(month).padStart(2, '0') + '-' + String(day).padStart(2, '0');
-
-        html += '<td style="vertical-align: top; padding: 5px;">';
-        html += '<strong>' + day + '</strong><br/>';
-
-        if (events[dateKey]) {
-            events[dateKey].forEach(function(ev) {
-                html += '<div style="font-size:0.85em; margin-top:3px;">' + ev.time + ' - ' + ev.name + '</div>';
-            });
-        }
-        html += '</td>';
-        day++;
-    }
-    html += '</tr>';
-
-    // Remplissage des rangées suivantes
-    while (day <= daysInMonth) {
-        html += '<tr>';
-        for (let i = 1; i <= 7; i++) {
-            if (day > daysInMonth) {
-                html += '<td></td>';
-            } else {
-                const dateKey = year + '-' + String(month).padStart(2, '0') + '-' + String(day).padStart(2, '0');
-                html += '<td style="vertical-align: top; padding: 5px;">';
-                html += '<strong>' + day + '</strong><br/>';
-
-                if (events[dateKey]) {
-                    events[dateKey].forEach(function(ev) {
-                        html += '<div style="font-size:0.85em; margin-top:3px;">' + ev.time + ' - ' + ev.name + '</div>';
-                    });
-                }
-                html += '</td>';
-                day++;
-            }
-        }
-        html += '</tr>';
-    }
-
-    html += '</tbody></table>';
-
-    calendarElement.innerHTML = html;
-});
-JS
-        );
 
         return $this->content;
     }
@@ -254,25 +170,28 @@ JS
         $firstday = ($firstday == 0) ? 6 : $firstday - 1; // Lundi = 0
         $gridstart = strtotime("-$firstday day", $monthstart);
 
-        // Générer les semaines et jours
-        // Transforme en tableau indexé attendu par Mustache
+        $year = date('Y'); // ou année ciblée
+        $month = date('m'); // ou mois ciblé
+
+        $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
         $eventdays = [];
-        foreach ($eventmap as $date => $events) {
-            // S'assurer que $events est un tableau
-            if (!is_array($events)) {
-                $events = [];
-            }
+
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+            $date = sprintf('%04d-%02d-%02d', $year, $month, $day);
+
+            // Si des événements existent pour ce jour, on les prend, sinon tableau vide
+            $events = isset($eventmap[$date]) ? $eventmap[$date] : [];
+
             $eventdays[] = [
                 'date' => $date,
                 'events' => $events,
             ];
         }
 
-        // Appeler la fonction qui génère la grille calendrier avec événements
-        //return $this->render_custom_calendar($eventdays, $month, $year);
+        // Regrouper chaque 7 jours dans une "semaine"
+        $weeks = array_chunk($eventdays, 7);
+        return $weeks;
 
-        // Structure à envoyer à Mustache
-        return $eventmap;
 
     }
 
