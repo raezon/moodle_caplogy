@@ -172,24 +172,7 @@
     flex: 1;
 }
 
-.calendar-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: center;
-}
 
-.calendar-table th,
-.calendar-table td {
-    padding: 6px;
-    border: 1px solid #ccc;
-    vertical-align: top;
-}
-
-.event {
-    font-size: 0.8em;
-    color: #0073aa;
-    display: block;
-}
 
 .today-reminders li,
 .resources-list li {

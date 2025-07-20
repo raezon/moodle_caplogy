@@ -1,0 +1,73 @@
+/* Styles pour le calendrier */
+.calendar-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+
+.calendar-table th,
+.calendar-table td {
+    padding: 8px 6px;
+    border: 1px solid #ccc;
+    vertical-align: top;
+    min-width: 100px;
+    height: 90px;
+}
+
+.calendar-table th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+    color: #333;
+}
+
+.calendar-table td {
+    background-color: #fff;
+    cursor: default;
+    position: relative;
+}
+
+.calendar-table td strong {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #222;
+}
+
+/* Style des événements */
+.event {
+    font-size: 0.85em;
+    color: #0073aa;
+    margin-top: 3px;
+    display: block;
+    text-align: left;
+    padding-left: 4px;
+    border-left: 3px solid #0073aa;
+    background-color: #e6f0fa;
+    border-radius: 2px;
+    user-select: none;
+}
+
+/* Survol événement */
+.event:hover {
+    background-color: #d0e5fb;
+    color: #004a85;
+}
+
+/* Cellules vides */
+.calendar-table td:empty {
+    background-color: #fafafa;
+    cursor: default;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+
+    .calendar-table th,
+    .calendar-table td {
+        min-width: 60px;
+        height: 70px;
+        padding: 6px 4px;
+        font-size: 0.9em;
+    }
+}
