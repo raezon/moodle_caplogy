@@ -1,11 +1,26 @@
 <?php
 defined('MOODLE_INTERNAL') || die();
 
+function shorten_title(string $text, int $maxLength = 10): string {
+    // Utiliser mb_strlen pour supporter UTF-8
+    if (mb_strlen($text) <= $maxLength) {
+        return $text;
+    }
+    return mb_substr($text, 0, $maxLength) . '...';
+}
+
 /**
  * Récupère les événements Airtable en cache ou via l'API.
  */
 function block_dashboard_get_airtable_events(): array {
     $cache = cache::make('block_dashboard', 'airtable_events');
+
+    // recuéprer l'email de l'utilisateur connecter
+    global $USER;
+    $useremail = $USER->email; // email de l'utilisateur connecté
+    $formula = urlencode('AND({Email Intervenant}="' . $useremail . '", {Type d\'activité}="Activité externe")');
+
+
 
     // Tenter de charger depuis le cache
     $events = $cache->get('events');
@@ -19,7 +34,7 @@ function block_dashboard_get_airtable_events(): array {
     $TABLE_ID = "tblpuHERz9nVwOQhM";
     $LIMIT = 20;
 
-    $url = "https://api.airtable.com/v0/{$BASE_ID}/{$TABLE_ID}";
+    $url = "https://api.airtable.com/v0/{$BASE_ID}/{$TABLE_ID}?filterByFormula={$formula}";
     $headers = [
         "Authorization: Bearer $AIRTABLE_TOKEN",
         "Content-Type: application/json",
@@ -61,12 +76,19 @@ function block_dashboard_get_airtable_events(): array {
     foreach ($records as $rec) {
         $fields = $rec["fields"];
         $title = $fields["Type d'activité"] ?? "Sans titre";
+        $matiere= $fields["Matière"] ?? "Sans titre";
+        $ecole = $fields["Ecole d'intervention"] ?? "Sans titre";
+        //const ecole = event.extendedProps.ecole || "Non précisé";
+        //$title = shorten_title($fullTitle, 10);
         $start = rtrim($fields["Heure de début"] ?? "", "Z");
         $end = rtrim($fields["Heure de fin"] ?? "", "Z");
 
         if ($start && $end) {
             $events[] = [
-                'title' => $title,
+                'title' => mb_substr($matiere[0], 0, 11) . "-" . "<br>" . $ecole,
+                'typeActivite'=>$title,
+                'matiere' => $matiere,
+                'ecole'=>$ecole,
                 'start' => $start,
                 'end' => $end,
             ];

@@ -1,0 +1,52 @@
+<form method="post" enctype="multipart/form-data" action="">
+  <div class="form-group">
+    <label for="retard">Est-ce que vous arrivez en retard ?</label>
+    <select id="retard" name="retard" class="form-control">
+      {{#choix_retards}}
+        <option value="{{value}}">{{label}}</option>
+      {{/choix_retards}}
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="depart_top">Est-ce que vous êtes parti top ?</label>
+    <select id="depart_top" name="depart_top" class="form-control">
+      {{#choix_depart_top}}
+        <option value="{{value}}">{{label}}</option>
+      {{/choix_depart_top}}
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="etat_etudiant">État des étudiants</label>
+    <select id="etat_etudiant" name="etat_etudiant" class="form-control">
+      {{#etat_etudiants}}
+        <option value="{{value}}">{{label}}</option>
+      {{/etat_etudiants}}
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="upload_file">Fichier à uploader</label>
+    <input type="file" id="upload_file" name="upload_file" class="form-control-file" />
+  </div>
+
+  <div class="form-group">
+    <label for="desc_cours">Description du cours</label>
+    <textarea id="desc_cours" name="desc_cours" class="form-control" rows="3"></textarea>
+  </div>
+
+  <div class="form-group">
+    <label for="desc_taches">Description des tâches</label>
+    <textarea id="desc_taches" name="desc_taches" class="form-control" rows="3"></textarea>
+  </div>
+
+ <div class="form-group">
+    <label for="signature-pad">Signature</label>
+    <canvas id="signature-pad" style="border:1px solid #ccc; border-radius:4px; width:100%; height:150px;"></canvas>
+    <input type="hidden" id="signature" name="signature" />
+    <button type="button" id="clear-signature" class="btn btn-secondary" style="margin-top:8px;">Effacer la signature</button>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Valider</button>
+</form>
