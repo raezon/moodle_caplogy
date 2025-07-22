@@ -1,73 +1,88 @@
-/* Styles pour le calendrier */
-.calendar-table {
+/* Style global du calendrier */
+#calendar table {
+    border-collapse: separate;
+    border-spacing: 0;
     width: 100%;
-    border-collapse: collapse;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* En-têtes (jours de la semaine) */
+#calendar thead th {
+    background: linear-gradient(135deg, #4e73df, #224abe);
+    color: white;
     text-align: center;
-    font-family: Arial, sans-serif;
-}
-
-.calendar-table th,
-.calendar-table td {
-    padding: 8px 6px;
-    border: 1px solid #ccc;
-    vertical-align: top;
-    min-width: 100px;
-    height: 90px;
-}
-
-.calendar-table th {
-    background-color: #f0f0f0;
+    padding: 12px 0;
     font-weight: bold;
-    color: #333;
+    font-size: 0.95em;
+    border: 1px solid #ddd;
 }
 
-.calendar-table td {
-    background-color: #fff;
-    cursor: default;
+/* Corps du tableau */
+#calendar tbody td {
+    background-color: #084b8a;
+    vertical-align: top;
+    padding: 10px;
+    min-height: 80px;
+    border: 1px solid #084b8a;
+    transition: background-color 0.3s ease;
+    font-size: 0.9em;
     position: relative;
 }
 
-.calendar-table td strong {
+/* Numéro du jour */
+#calendar tbody td strong {
     display: block;
-    margin-bottom: 5px;
-    font-weight: 600;
-    color: #222;
+    font-size: 1.1em;
+    color: #333;
+    margin-bottom: 6px;
 }
 
-/* Style des événements */
-.event {
+/* Événement */
+#calendar tbody td div {
+    background-color: #084b8a;
+    border-left: 4px solid #4e73df;
+    padding: 4px 6px;
+    margin-top: 4px;
+    border-radius: 6px;
     font-size: 0.85em;
-    color: #0073aa;
-    margin-top: 3px;
-    display: block;
-    text-align: left;
-    padding-left: 4px;
-    border-left: 3px solid #0073aa;
-    background-color: #e6f0fa;
-    border-radius: 2px;
-    user-select: none;
+    color: #333;
 }
 
-/* Survol événement */
-.event:hover {
-    background-color: #d0e5fb;
-    color: #004a85;
-}
-
-/* Cellules vides */
-.calendar-table td:empty {
-    background-color: #fafafa;
-    cursor: default;
+/* Effet hover */
+#calendar tbody td:hover {
+    background-color: #f1f7ff;
 }
 
 /* Responsive */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
 
-    .calendar-table th,
-    .calendar-table td {
-        min-width: 60px;
-        height: 70px;
-        padding: 6px 4px;
-        font-size: 0.9em;
+    #calendar table,
+    #calendar thead,
+    #calendar tbody,
+    #calendar th,
+    #calendar td,
+    #calendar tr {
+        display: block;
+    }
+
+    #calendar thead {
+        display: none;
+    }
+
+    #calendar tbody td {
+        border: none;
+        border-bottom: 1px solid #084b8a;
+        padding: 10px;
+    }
+
+    #calendar tbody td::before {
+        content: attr(data-day);
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+        color: #224abe;
     }
 }

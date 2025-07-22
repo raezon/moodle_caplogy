@@ -324,49 +324,7 @@
     margin: 0;
 }
 
-/*** calendrier ***/
-table.calendar {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-    font-family: Arial, sans-serif;
-}
 
-table.calendar thead th {
-    background-color: #084b8a;
-    color: white;
-    padding: 8px 0;
-    text-align: center;
-    border: 1px solid #ddd;
-}
-
-table.calendar tbody td {
-    border: 1px solid #ddd;
-    vertical-align: top;
-    height: 100px;
-    padding: 5px;
-    overflow: auto;
-}
-
-table.calendar tbody tr {
-    height: 100px;
-}
-
-table.calendar tbody td strong {
-    display: block;
-    margin-bottom: 5px;
-    font-size: 0.7em;
-    color: #333;
-}
-
-table.calendar tbody td div {
-    background-color: #e7f3fe;
-    margin-bottom: 3px;
-    padding: 3px 6px;
-    border-radius: 4px;
-    font-size: 0.9em;
-    color: #00529b;
-}
 
 strong{
     font-size: 0.8em;
